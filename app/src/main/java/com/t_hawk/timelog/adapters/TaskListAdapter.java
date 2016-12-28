@@ -2,6 +2,7 @@ package com.t_hawk.timelog.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,9 +54,11 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
 
         Task task = _tasks[position];
         int subtaskCount = task.getSubTasks().size();
+        Resources res = getContext().getResources();
+        int formatStringRes = subtaskCount == 1 ? R.string.task_subtask_count_singular : R.string.task_subtask_count_plural;
 
         holder.Name.setText(task.getName());
-        holder.SubTasks.setText(subtaskCount == 1 ? "1 subtask" : subtaskCount + " subtasks");
+        holder.SubTasks.setText(String.format(res.getString(formatStringRes), subtaskCount));
         holder.TotalTime.setText(R.string.task_totaltime_dummy);
 
         return row;

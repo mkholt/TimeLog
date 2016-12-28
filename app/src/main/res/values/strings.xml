@@ -7,4 +7,6 @@
     <string name="action_pause">Start break</string>
     <string name="action_stop">Stop task</string>
     <string name="action_remove_task">Remove task</string>
+    <string name="task_subtask_count_singular">%d subtask</string>
+    <string name="task_subtask_count_plural">%d subtasks</string>
 </resources>
