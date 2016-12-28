@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="task_name_dummy">Some Task Here</string>
+    <string name="task_subtasks_dummy">2 subtasks</string>
+    <string name="task_totaltime_dummy">1d 3h 45m</string>
+</resources>

@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">TimeLog</string>
     <string name="action_settings">Settings</string>
+    <string name="action_add_task">Add task</string>
+    <string name="action_edit_task">Edit task</string>
+    <string name="action_record">Start task</string>
+    <string name="action_pause">Start break</string>
+    <string name="action_stop">Stop task</string>
+    <string name="action_remove_task">Remove task</string>
 </resources>

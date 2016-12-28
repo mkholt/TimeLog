@@ -10,17 +10,25 @@ import java.util.List;
  */
 
 public class Task {
-    private String _name;
+    private String name;
 
-    private List<Task> _subTasks;
+    private List<Task> subTasks;
 
     public Task(String name) {
-        _name = name;
-        _subTasks = new LinkedList<>();
+        this.name = name;
+        subTasks = new LinkedList<>();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<Task> getSubTasks() {
+        return subTasks;
     }
 
     @Override
     public String toString() {
-        return String.format("%1$s%2$s", _name, (_subTasks.size() > 0 ? " (" + _subTasks.size() + ")": ""));
+        return String.format("%1$s%2$s", name, (subTasks.size() > 0 ? " (" + subTasks.size() + ")": ""));
     }
 }

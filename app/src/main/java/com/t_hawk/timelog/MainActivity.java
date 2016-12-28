@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             items[i] = new Task("Task " + (i+1));
         }
 
-        _adapter = new TaskListAdapter(this, android.R.layout.simple_list_item_1, items);
+        _adapter = new TaskListAdapter(this, R.layout.content_main_task, items);
         ListView listView = (ListView) findViewById(R.id.entries);
 
         if (null != listView) {

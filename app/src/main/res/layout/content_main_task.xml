@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" android:padding="10dp">
+        <TextView
+            android:id="@+id/tasklist_task_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="@string/task_name_dummy"/>
+        <TextView
+            android:id="@+id/tasklist_task_subtasks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tasklist_task_name"
+            android:text="@string/task_subtasks_dummy"
+            />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/tasklist_task_buttons">
+                <ImageButton
+                    android:id="@+id/tasklist_task_record"
+                    android:src="@drawable/ic_play_arrow_black_24dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/action_record"
+                    android:background="@null"
+                    android:padding="10dp"/>
+                <ImageButton
+                    android:id="@+id/tasklist_task_pause"
+                    android:src="@drawable/ic_pause_black_24dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/action_pause"
+                    android:background="@null"
+                    android:padding="10dp"
+                    android:visibility="gone"/>
+                <ImageButton
+                    android:id="@+id/tasklist_task_stop"
+                    android:src="@drawable/ic_stop_black_24dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/action_stop"
+                    android:background="@null"
+                    android:padding="10dp"
+                    android:visibility="gone"/>
+                <ImageButton
+                    android:id="@+id/tasklist_task_edit"
+                    android:src="@drawable/ic_edit_black_24dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/action_edit_task"
+                    android:background="@null"
+                    android:padding="10dp" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/tasklist_task_name"
+            android:layout_toStartOf="@id/tasklist_task_buttons">
+                <TextView
+                    android:id="@+id/tasklist_task_totaltime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:drawableStart="@drawable/ic_timer_black_24dp"
+                    android:drawablePadding="10dp"
+                    android:text="@string/task_totaltime_dummy"
+                    android:layout_gravity="center"/>
+        </FrameLayout>
+</RelativeLayout>

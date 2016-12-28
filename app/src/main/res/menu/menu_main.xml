@@ -3,6 +3,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.t_hawk.timelog.MainActivity">
     <item
+        android:id="@+id/action_add_task"
+        android:icon="@drawable/ic_add_white_24dp"
+        android:title="@string/action_add_task"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_record"
+        android:icon="@drawable/ic_fiber_manual_record_white_24dp"
+        android:title="@string/action_record"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_pause"
+        android:icon="@drawable/ic_pause_white_24dp"
+        android:title="@string/action_pause"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_stop"
+        android:icon="@drawable/ic_stop_white_24dp"
+        android:title="@string/action_stop"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
