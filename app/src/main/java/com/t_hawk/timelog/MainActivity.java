@@ -14,6 +14,8 @@ import android.widget.ListView;
 import com.t_hawk.timelog.adapters.TaskListAdapter;
 import com.t_hawk.timelog.model.Task;
 
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity {
 
     private ArrayAdapter<Task> _adapter;
@@ -37,9 +39,21 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Task[] items = new Task[10];
+        Random rand = new Random();
         for (int i = 0; i < items.length; i++)
         {
             items[i] = new Task("Task " + (i+1));
+            int sub = rand.nextInt(5);
+            for (int j = 0; j < sub; j++)
+            {
+                Task subTask = new Task(items[i].getName() + "." + (j+1));
+                if (rand.nextBoolean())
+                {
+                    subTask.getSubTasks().add(new Task(subTask.getName() + ".1"));
+                }
+
+                items[i].getSubTasks().add(subTask);
+            }
         }
 
         _adapter = new TaskListAdapter(this, R.layout.content_main_task, items);
