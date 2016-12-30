@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,7 +60,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
 
         holder.Name.setText(task.getName());
         holder.SubTasks.setText(String.format(res.getString(formatStringRes), subtaskCount));
-        holder.TotalTime.setText(R.string.task_totaltime_dummy);
+        holder.TotalTime.setText(DateUtils.formatElapsedTime(task.getDuration() / 1000));
 
         return row;
     }
