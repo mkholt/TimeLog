@@ -6,13 +6,15 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.LongSparseArray;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.orm.SugarDb;
+import com.orm.query.Condition;
+import com.orm.query.Select;
 import com.t_hawk.timelog.adapters.TaskListAdapter;
 import com.t_hawk.timelog.model.Break;
 import com.t_hawk.timelog.model.Registration;
@@ -22,8 +24,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -50,12 +52,36 @@ public class MainActivity extends AppCompatActivity {
 
         BuildDummyData();
 
+        // TODO: This needs to be selectable in the UI
+        Calendar from = Calendar.getInstance();
+        from.add(Calendar.DAY_OF_YEAR, -7);
+
+        Calendar to = Calendar.getInstance();
+        to.add(Calendar.DAY_OF_YEAR, -1);
+
+        List<Registration> registrations = Select.from(Registration.class).and(
+                Condition.prop("start_time").gt(from.getTimeInMillis()),
+                Condition.prop("end_time").lt(to.getTimeInMillis())
+        ).list();
+
+        HashSet<Long> seen = new HashSet<>();
         ArrayList<Task> tasks = new ArrayList<>();
-        Iterator<Task> taskIter = Task.findAll(Task.class);
-        while (taskIter.hasNext())
+        for (Registration r : registrations)
         {
-            tasks.add(taskIter.next());
+            Task t = r.getTask();
+            if (t == null) continue;
+            while (t.getParentTask() != null)
+            {
+                t = t.getParentTask();
+            }
+
+            if (!seen.contains(t.getId()))
+            {
+                seen.add(t.getId());
+                tasks.add(t);
+            }
         }
+
         _adapter = new TaskListAdapter(this, R.layout.content_main_task, tasks.toArray(new Task[0]));
         ListView listView = (ListView) findViewById(R.id.entries);
 
