@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.LongSparseArray;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -70,13 +72,13 @@ public class MainActivity extends AppCompatActivity {
         Break.findById(Break.class, 1);
 
         Random rand = new Random();
-        ArrayList<Long> ids = new ArrayList<>();
 
+        LongSparseArray<Task> taskMap = new LongSparseArray<>();
         for (int i = 0; i < 10; i++)
         {
             Task task = new Task("Task " + (i+1));
             task.save();
-            ids.add(task.getId());
+            taskMap.put(task.getId(), task);
 
             int sub = rand.nextInt(5);
             for (int j = 0; j < sub; j++)
@@ -84,14 +86,14 @@ public class MainActivity extends AppCompatActivity {
                 Task subTask = new Task(task.getName() + "." + (j+1));
                 subTask.setParentTask(task);
                 subTask.save();
-                ids.add(subTask.getId());
+                taskMap.put(subTask.getId(), subTask);
 
                 if (rand.nextBoolean())
                 {
                     Task subSubTask = new Task(subTask.getName() + ".1");
                     subSubTask.setParentTask(subTask);
                     subSubTask.save();
-                    ids.add(subSubTask.getId());
+                    taskMap.put(subSubTask.getId(), subSubTask);
                 }
             }
         }
@@ -107,28 +109,37 @@ public class MainActivity extends AppCompatActivity {
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
 
+            Calendar breakCal = Calendar.getInstance();/**/
+            breakCal.setTimeInMillis(cal.getTimeInMillis());
+            breakCal.set(Calendar.HOUR_OF_DAY, 12);
+            Date startBreak = new Date(breakCal.getTimeInMillis());
+            breakCal.add(Calendar.MINUTE, 30);
+            Date endBreak = new Date(breakCal.getTimeInMillis());
+
             Date startTime = new Date(cal.getTimeInMillis());
+            Registration breakReg = null;
+            int min = 60*15;
             while (seconds > 0)
             {
-                int regTime = rand.nextInt(seconds);
+                int regTime = seconds > min ? rand.nextInt(seconds - min + 1) + min : seconds;
                 seconds -= regTime;
                 cal.add(Calendar.SECOND, regTime);
 
-                Task task = Task.findById(Task.class, ids.get(rand.nextInt(ids.size())));
-
+                Task task = taskMap.valueAt(rand.nextInt(taskMap.size()));
                 Registration reg = new Registration(startTime, new Date(cal.getTimeInMillis()), task);
                 reg.save();
 
-                if (rand.nextBoolean()) {
-                    Calendar breakCal = Calendar.getInstance();
-                    breakCal.setTimeInMillis(cal.getTimeInMillis());
-                    breakCal.set(Calendar.HOUR_OF_DAY, 12);
-                    Date startBreak = new Date(breakCal.getTimeInMillis());
-                    breakCal.add(Calendar.MINUTE, 30);
-                    Date endBreak = new Date(breakCal.getTimeInMillis());
-                    Break b = new Break(startBreak, endBreak, reg, rand.nextBoolean());
-                    b.save();
+                startTime = new Date(cal.getTimeInMillis());
+
+                if (reg.getStartTime().before(startBreak) && reg.getEndTime().after(endBreak))
+                {
+                    breakReg = reg;
                 }
+            }
+
+            if (null != breakReg && rand.nextInt(10) > 2) {
+                Break b = new Break(startBreak, endBreak, breakReg, rand.nextBoolean());
+                b.save();
             }
         }
     }
