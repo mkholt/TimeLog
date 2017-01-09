@@ -12,6 +12,13 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.orm.SugarDb;
 import com.orm.query.Condition;
 import com.orm.query.Select;
@@ -24,8 +31,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,8 +45,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        BuildDrawer(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (null != fab) {
@@ -88,6 +100,42 @@ public class MainActivity extends AppCompatActivity {
         if (null != listView) {
             listView.setAdapter(_adapter);
         }
+    }
+
+    private void BuildDrawer(Toolbar toolbar) {
+        PrimaryDrawerItem taskItem = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.drawer_item_tasks).withIcon(GoogleMaterial.Icon.gmd_home);
+
+        Map<TaskFilter, IDrawerItem> filterItems = new HashMap<>();
+
+        filterItems.put(TaskFilter.yesterday, new SecondaryDrawerItem().withName(R.string.drawer_item_yesterday).withIcon(GoogleMaterial.Icon.gmd_date_range));
+        filterItems.put(TaskFilter.today, new SecondaryDrawerItem().withName(R.string.drawer_item_today).withIcon(GoogleMaterial.Icon.gmd_date_range));
+        filterItems.put(TaskFilter.lastWeek, new SecondaryDrawerItem().withName(R.string.drawer_item_lastWeek).withIcon(GoogleMaterial.Icon.gmd_date_range));
+        filterItems.put(TaskFilter.thisWeek, new SecondaryDrawerItem().withName(R.string.drawer_item_thisWeek).withIcon(GoogleMaterial.Icon.gmd_date_range));
+        filterItems.put(TaskFilter.lastMonth, new SecondaryDrawerItem().withName(R.string.drawer_item_lastMonth).withIcon(GoogleMaterial.Icon.gmd_date_range));
+        filterItems.put(TaskFilter.thisMonth, new SecondaryDrawerItem().withName(R.string.drawer_item_thisMonth).withIcon(GoogleMaterial.Icon.gmd_date_range));
+        filterItems.put(TaskFilter.year, new SecondaryDrawerItem().withName(R.string.drawer_item_year).withIcon(GoogleMaterial.Icon.gmd_date_range));
+        filterItems.put(TaskFilter.period, new SecondaryDrawerItem().withName(R.string.drawer_item_period).withIcon(GoogleMaterial.Icon.gmd_date_range));
+
+                new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .addDrawerItems(
+                        taskItem
+                        , new DividerDrawerItem()
+                )
+                .addDrawerItems(filterItems.values().toArray(new IDrawerItem[0]))
+                .addDrawerItems(
+                        new DividerDrawerItem()
+                        , new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIcon(GoogleMaterial.Icon.gmd_settings)
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        // do something with the clicked item :D
+                        return false;
+                    }
+                })
+                .build();
     }
 
     private void BuildDummyData() {
