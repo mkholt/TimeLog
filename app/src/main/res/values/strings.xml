@@ -9,4 +9,6 @@
     <string name="action_remove_task">Remove task</string>
     <string name="task_subtask_count_singular">%d subtask</string>
     <string name="task_subtask_count_plural">%d subtasks</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
 </resources>

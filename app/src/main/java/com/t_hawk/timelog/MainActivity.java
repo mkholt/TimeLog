@@ -3,19 +3,25 @@ package com.t_hawk.timelog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.LongSparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.orm.SugarDb;
 import com.orm.query.Condition;
 import com.orm.query.Select;
+import com.t_hawk.timelog.adapters.DrawerListAdapter;
 import com.t_hawk.timelog.adapters.TaskListAdapter;
+import com.t_hawk.timelog.adapters.model.DrawerItem;
 import com.t_hawk.timelog.model.Break;
 import com.t_hawk.timelog.model.Registration;
 import com.t_hawk.timelog.model.Task;
@@ -30,14 +36,42 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayAdapter<Task> _adapter;
+    private ArrayAdapter<Task> taskAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ListView drawerList = (ListView) findViewById(R.id.left_drawer);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        ActionBar ab = getSupportActionBar();
+
+        String[] drawerItemTitles = getResources().getStringArray(R.array.drawer_items);
+        List<DrawerItem> drawerItemList = new ArrayList<>();
+        for (String title : drawerItemTitles) {
+            drawerItemList.add(new DrawerItem(R.drawable.ic_edit_black_24dp, title));
+        }
+
+        // Set the taskAdapter for the list view
+        drawerList.setAdapter(new DrawerListAdapter(this, R.layout.drawer_list_item, drawerItemList.toArray(new DrawerItem[0])));
+        // Set the list's click listener
+        drawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                System.out.println("Selected " + position);
+            }
+        });
+
+        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
+        drawerLayout.addDrawerListener(drawerToggle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        drawerToggle.syncState();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (null != fab) {
@@ -82,11 +116,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        _adapter = new TaskListAdapter(this, R.layout.content_main_task, tasks.toArray(new Task[0]));
+        taskAdapter = new TaskListAdapter(this, R.layout.content_main_task, tasks.toArray(new Task[0]));
         ListView listView = (ListView) findViewById(R.id.entries);
 
         if (null != listView) {
-            listView.setAdapter(_adapter);
+            listView.setAdapter(taskAdapter);
         }
     }
 
