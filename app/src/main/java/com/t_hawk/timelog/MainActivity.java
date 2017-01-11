@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -103,39 +104,74 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void BuildDrawer(Toolbar toolbar) {
-        PrimaryDrawerItem taskItem = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.drawer_item_tasks).withIcon(GoogleMaterial.Icon.gmd_home);
+        long id = 1;
+        PrimaryDrawerItem taskItem = new PrimaryDrawerItem().withIdentifier(id++).withName(R.string.drawer_item_tasks).withIcon(GoogleMaterial.Icon.gmd_home);
 
-        Map<TaskFilter, IDrawerItem> filterItems = new HashMap<>();
+        final LongSparseArray<TaskFilter> filterMap = new LongSparseArray<>();
+        List<IDrawerItem> drawerItems = new LinkedList<>();
 
-        filterItems.put(TaskFilter.yesterday, new SecondaryDrawerItem().withName(R.string.drawer_item_yesterday).withIcon(GoogleMaterial.Icon.gmd_date_range));
-        filterItems.put(TaskFilter.today, new SecondaryDrawerItem().withName(R.string.drawer_item_today).withIcon(GoogleMaterial.Icon.gmd_date_range));
-        filterItems.put(TaskFilter.lastWeek, new SecondaryDrawerItem().withName(R.string.drawer_item_lastWeek).withIcon(GoogleMaterial.Icon.gmd_date_range));
-        filterItems.put(TaskFilter.thisWeek, new SecondaryDrawerItem().withName(R.string.drawer_item_thisWeek).withIcon(GoogleMaterial.Icon.gmd_date_range));
-        filterItems.put(TaskFilter.lastMonth, new SecondaryDrawerItem().withName(R.string.drawer_item_lastMonth).withIcon(GoogleMaterial.Icon.gmd_date_range));
-        filterItems.put(TaskFilter.thisMonth, new SecondaryDrawerItem().withName(R.string.drawer_item_thisMonth).withIcon(GoogleMaterial.Icon.gmd_date_range));
-        filterItems.put(TaskFilter.year, new SecondaryDrawerItem().withName(R.string.drawer_item_year).withIcon(GoogleMaterial.Icon.gmd_date_range));
-        filterItems.put(TaskFilter.period, new SecondaryDrawerItem().withName(R.string.drawer_item_period).withIcon(GoogleMaterial.Icon.gmd_date_range));
+        filterMap.put(++id, TaskFilter.yesterday);
+        drawerItems.add(new SecondaryDrawerItem().withIdentifier(id).withName(R.string.drawer_item_yesterday).withIcon(GoogleMaterial.Icon.gmd_date_range));
+        filterMap.put(++id, TaskFilter.today);
+        drawerItems.add(new SecondaryDrawerItem().withIdentifier(id).withName(R.string.drawer_item_today).withIcon(GoogleMaterial.Icon.gmd_date_range));
+        filterMap.put(++id, TaskFilter.lastWeek);
+        drawerItems.add(new SecondaryDrawerItem().withIdentifier(id).withName(R.string.drawer_item_lastWeek).withIcon(GoogleMaterial.Icon.gmd_date_range));
+        filterMap.put(++id, TaskFilter.thisWeek);
+        drawerItems.add(new SecondaryDrawerItem().withIdentifier(id).withName(R.string.drawer_item_thisWeek).withIcon(GoogleMaterial.Icon.gmd_date_range));
+        filterMap.put(++id, TaskFilter.lastMonth);
+        drawerItems.add(new SecondaryDrawerItem().withIdentifier(id).withName(R.string.drawer_item_lastMonth).withIcon(GoogleMaterial.Icon.gmd_date_range));
+        filterMap.put(++id, TaskFilter.thisMonth);
+        drawerItems.add(new SecondaryDrawerItem().withIdentifier(id).withName(R.string.drawer_item_thisMonth).withIcon(GoogleMaterial.Icon.gmd_date_range));
+        filterMap.put(++id, TaskFilter.year);
+        drawerItems.add(new SecondaryDrawerItem().withIdentifier(id).withName(R.string.drawer_item_year).withIcon(GoogleMaterial.Icon.gmd_date_range));
+        filterMap.put(++id, TaskFilter.period);
+        drawerItems.add(new SecondaryDrawerItem().withIdentifier(id).withName(R.string.drawer_item_period).withIcon(GoogleMaterial.Icon.gmd_date_range));
 
-                new DrawerBuilder()
-                .withActivity(this)
-                .withToolbar(toolbar)
-                .addDrawerItems(
-                        taskItem
-                        , new DividerDrawerItem()
-                )
-                .addDrawerItems(filterItems.values().toArray(new IDrawerItem[0]))
-                .addDrawerItems(
-                        new DividerDrawerItem()
-                        , new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIcon(GoogleMaterial.Icon.gmd_settings)
-                )
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        // do something with the clicked item :D
-                        return false;
+        new DrawerBuilder()
+            .withActivity(this)
+            .withToolbar(toolbar)
+            .addDrawerItems(
+                    taskItem
+                    , new DividerDrawerItem()
+            )
+            .addDrawerItems(drawerItems.toArray(new IDrawerItem[0]))
+            .addDrawerItems(
+                new DividerDrawerItem()
+                , new SecondaryDrawerItem().withIdentifier(++id).withName(R.string.drawer_item_settings).withIcon(GoogleMaterial.Icon.gmd_settings)
+            )
+            .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                @Override
+                public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                    // do something with the clicked item :D
+                    TaskFilter filter = filterMap.get(drawerItem.getIdentifier());
+                    if (null == filter) filter = TaskFilter.none;
+
+                    switch (filter)
+                    {
+                        case today:
+                            break;
+                        case lastWeek:
+                            break;
+                        case thisWeek:
+                            break;
+                        case lastMonth:
+                            break;
+                        case thisMonth:
+                            break;
+                        case year:
+                            break;
+                        case period:
+                            break;
+                        case yesterday:
+                            break;
+                        default:
+                            break;
                     }
-                })
-                .build();
+
+                    return false;
+                }
+            })
+            .build();
     }
 
     private void BuildDummyData() {

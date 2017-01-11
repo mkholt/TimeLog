@@ -7,5 +7,5 @@ package com.t_hawk.timelog;
  * @author Morten
  */
 enum TaskFilter {
-    today, lastWeek, thisWeek, lastMonth, thisMonth, year, period, yesterday
+    none, today, lastWeek, thisWeek, lastMonth, thisMonth, year, period, yesterday
 }
