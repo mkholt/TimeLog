@@ -1,5 +1,7 @@
 package com.t_hawk.timelog;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
@@ -22,23 +23,22 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.orm.SugarDb;
 import com.orm.query.Condition;
 import com.orm.query.Select;
-import com.t_hawk.timelog.adapters.TaskListAdapter;
+import com.t_hawk.timelog.fragments.TaskListFragment;
 import com.t_hawk.timelog.model.Break;
 import com.t_hawk.timelog.model.Registration;
 import com.t_hawk.timelog.model.Task;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TaskListFragment.OnListFragmentInteractionListener {
 
     private ArrayAdapter<Task> _adapter;
 
@@ -64,14 +64,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         BuildDummyData();
+    }
 
-        // TODO: This needs to be selectable in the UI
-        Calendar from = Calendar.getInstance();
-        from.add(Calendar.DAY_OF_YEAR, -7);
-
-        Calendar to = Calendar.getInstance();
-        to.add(Calendar.DAY_OF_YEAR, -1);
-
+    private ArrayList<Task> getTasks(Calendar from, Calendar to) {
         List<Registration> registrations = Select.from(Registration.class).and(
                 Condition.prop("start_time").gt(from.getTimeInMillis()),
                 Condition.prop("end_time").lt(to.getTimeInMillis())
@@ -95,12 +90,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        _adapter = new TaskListAdapter(this, R.layout.content_main_task, tasks.toArray(new Task[0]));
-        ListView listView = (ListView) findViewById(R.id.entries);
-
-        if (null != listView) {
-            listView.setAdapter(_adapter);
-        }
+        return tasks;
     }
 
     private void BuildDrawer(Toolbar toolbar) {
@@ -146,32 +136,65 @@ public class MainActivity extends AppCompatActivity {
                     TaskFilter filter = filterMap.get(drawerItem.getIdentifier());
                     if (null == filter) filter = TaskFilter.none;
 
+                    FragmentManager manager = getFragmentManager();
+                    FragmentTransaction transaction = manager.beginTransaction();
+
+                    // TODO: First-day-of-week should be a configuration setting
+                    int firstDayOfWeek = Calendar.SUNDAY;
+                    // TODO: Last-day-of-week should be a configuration setting
+                    int lastDayOfWeek = Calendar.SATURDAY;
+
+                    Calendar from = Calendar.getInstance();
+                    Calendar to = Calendar.getInstance();
+
                     switch (filter)
                     {
+                        case yesterday:
+                            from.add(Calendar.DATE, -1);
+                            to.add(Calendar.DATE, -1);
+                            break;
                         case today:
                             break;
                         case lastWeek:
-                            break;
+                            from.add(Calendar.WEEK_OF_YEAR, -1);
+                            to.add(Calendar.WEEK_OF_YEAR, -1);
                         case thisWeek:
+                            from.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
+                            to.set(Calendar.DAY_OF_WEEK, lastDayOfWeek);
                             break;
                         case lastMonth:
-                            break;
+                            from.add(Calendar.MONTH, -1);
+                            to.add(Calendar.MONTH, -1);
                         case thisMonth:
+                            from.set(Calendar.DATE, from.getActualMinimum(Calendar.DATE));
+                            to.set(Calendar.DATE, to.getActualMaximum(Calendar.DATE));
                             break;
                         case year:
+                            from.set(Calendar.DAY_OF_YEAR, from.getActualMinimum(Calendar.DAY_OF_YEAR));
+                            to.set(Calendar.DAY_OF_YEAR, to.getActualMaximum(Calendar.DAY_OF_YEAR));
                             break;
                         case period:
-                            break;
-                        case yesterday:
+                            // TODO: Implement this using a dialog
                             break;
                         default:
+                            // TODO: Handle not a period filter
                             break;
                     }
+
+                    TaskListFragment taskListFragment = TaskListFragment.newInstance(getTasks(from, to));
+                    transaction.add(R.id.main_fragment_container, taskListFragment);
+                    transaction.commit();
 
                     return false;
                 }
             })
             .build();
+    }
+
+    @Override
+    public void onListFragmentInteraction(Task item) {
+        // TODO : Implement this
+        return;
     }
 
     private void BuildDummyData() {

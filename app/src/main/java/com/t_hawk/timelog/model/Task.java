@@ -1,5 +1,8 @@
 package com.t_hawk.timelog.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.orm.SugarRecord;
 
 import java.util.LinkedList;
@@ -11,7 +14,7 @@ import java.util.List;
  * @author Morten
  */
 
-public class Task extends SugarRecord {
+public class Task extends SugarRecord implements Parcelable {
     private String name;
 
     private Task parentTask;
@@ -23,6 +26,23 @@ public class Task extends SugarRecord {
     public Task(String name) {
         this.name = name;
     }
+
+    private Task(Parcel in) {
+        name = in.readString();
+        parentTask = in.readParcelable(Task.class.getClassLoader());
+    }
+
+    public static final Creator<Task> CREATOR = new Creator<Task>() {
+        @Override
+        public Task createFromParcel(Parcel in) {
+            return new Task(in);
+        }
+
+        @Override
+        public Task[] newArray(int size) {
+            return new Task[size];
+        }
+    };
 
     public String getName() {
         return name;
@@ -66,5 +86,16 @@ public class Task extends SugarRecord {
     public String toString() {
         long numberOfSubTasks = numberOfSubTasks();
         return String.format("%1$s%2$s", name, (numberOfSubTasks > 0 ? " (" + numberOfSubTasks + ")": ""));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeParcelable(parentTask, 0);
     }
 }
