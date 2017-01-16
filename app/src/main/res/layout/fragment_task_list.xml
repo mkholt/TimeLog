@@ -6,8 +6,6 @@
     android:name="com.t_hawk.timelog.TaskListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context="com.t_hawk.timelog.fragments.TaskListFragment"
     tools:listitem="@layout/fragment_task" />
