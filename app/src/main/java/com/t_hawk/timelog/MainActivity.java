@@ -67,13 +67,34 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
         Calendar today = Calendar.getInstance();
         int day = today.get(Calendar.DAY_OF_WEEK);
 
-        TaskFilter filter = (FirstDayOfWeek == day && !HasRegistrations(today)) ? TaskFilter.lastWeek : TaskFilter.thisWeek;
+        Calendar from = Calendar.getInstance();
+        from.set(Calendar.HOUR_OF_DAY, 0);
+        from.set(Calendar.MINUTE, 0);
+        from.set(Calendar.SECOND, 0);
+        from.set(Calendar.MILLISECOND, 0);
+
+        Calendar to = Calendar.getInstance();
+        to.set(Calendar.HOUR_OF_DAY, 23);
+        to.set(Calendar.MINUTE, 59);
+        to.set(Calendar.SECOND, 59);
+        to.set(Calendar.MILLISECOND, 999);
+
+        TaskFilter filter;
+        if (HasRegistrations(from, to)) {
+            filter = TaskFilter.today;
+        } else if (FirstDayOfWeek == day) {
+            filter = TaskFilter.lastWeek;
+        } else {
+            filter = TaskFilter.thisWeek;
+        }
+
         LoadFilterFragment(filter);
     }
 
-    private boolean HasRegistrations(Calendar today) {
-        // TODO: Check in Sugar
-        return false;
+    private boolean HasRegistrations(Calendar from, Calendar to) {
+        return Select.from(Registration.class).and(
+                Condition.prop("start_time").gt(from.getTimeInMillis()),
+                Condition.prop("start_time").lt(to.getTimeInMillis())).count() > 0;
     }
 
     private ArrayList<Task> getTasks(Calendar from, Calendar to) {
@@ -164,40 +185,52 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
 
         Calendar from = Calendar.getInstance();
         Calendar to = Calendar.getInstance();
+        int titleId = -1;
 
         switch (filter)
         {
             case yesterday:
                 from.add(Calendar.DATE, -1);
                 to.add(Calendar.DATE, -1);
+                titleId = R.string.drawer_item_yesterday;
                 break;
             case today:
+                titleId = R.string.drawer_item_today;
                 break;
             case lastWeek:
                 from.add(Calendar.WEEK_OF_YEAR, -1);
                 to.add(Calendar.WEEK_OF_YEAR, -1);
+                titleId = R.string.drawer_item_lastWeek;
             case thisWeek:
                 from.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
                 to.set(Calendar.DAY_OF_WEEK, lastDayOfWeek);
+                if (-1 == titleId) titleId = R.string.drawer_item_thisWeek;
                 break;
             case lastMonth:
                 from.add(Calendar.MONTH, -1);
                 to.add(Calendar.MONTH, -1);
+                titleId = R.string.drawer_item_lastMonth;
             case thisMonth:
                 from.set(Calendar.DATE, from.getActualMinimum(Calendar.DATE));
                 to.set(Calendar.DATE, to.getActualMaximum(Calendar.DATE));
+                if (-1 == titleId) titleId = R.string.drawer_item_thisMonth;
                 break;
             case year:
                 from.set(Calendar.DAY_OF_YEAR, from.getActualMinimum(Calendar.DAY_OF_YEAR));
                 to.set(Calendar.DAY_OF_YEAR, to.getActualMaximum(Calendar.DAY_OF_YEAR));
+                titleId = R.string.drawer_item_year;
                 break;
             case period:
                 // TODO: Implement this using a dialog
+                titleId = R.string.drawer_item_period;
                 break;
             default:
                 // TODO: Handle not a period filter
+                titleId = R.string.app_name;
                 break;
         }
+
+        setTitle(titleId);
 
         TaskListFragment taskListFragment = TaskListFragment.newInstance(getTasks(from, to));
         transaction.add(R.id.main_fragment_container, taskListFragment);
