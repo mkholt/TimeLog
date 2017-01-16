@@ -68,16 +68,10 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
         int day = today.get(Calendar.DAY_OF_WEEK);
 
         Calendar from = Calendar.getInstance();
-        from.set(Calendar.HOUR_OF_DAY, 0);
-        from.set(Calendar.MINUTE, 0);
-        from.set(Calendar.SECOND, 0);
-        from.set(Calendar.MILLISECOND, 0);
+        setTimeOfDay(from, 0, 0, 0, 0);
 
         Calendar to = Calendar.getInstance();
-        to.set(Calendar.HOUR_OF_DAY, 23);
-        to.set(Calendar.MINUTE, 59);
-        to.set(Calendar.SECOND, 59);
-        to.set(Calendar.MILLISECOND, 999);
+        setTimeOfDay(to, 23, 59, 59, 999);
 
         TaskFilter filter;
         if (HasRegistrations(from, to)) {
@@ -89,6 +83,13 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
         }
 
         LoadFilterFragment(filter);
+    }
+
+    private void setTimeOfDay(Calendar calendar, int hours, int minutes, int seconds, int milliseconds) {
+        calendar.set(Calendar.HOUR_OF_DAY, hours);
+        calendar.set(Calendar.MINUTE, minutes);
+        calendar.set(Calendar.SECOND, seconds);
+        calendar.set(Calendar.MILLISECOND, milliseconds);
     }
 
     private boolean HasRegistrations(Calendar from, Calendar to) {
@@ -184,7 +185,10 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
         int lastDayOfWeek = LastDayOfWeek;
 
         Calendar from = Calendar.getInstance();
+        setTimeOfDay(from, 0, 0, 0, 0);
+
         Calendar to = Calendar.getInstance();
+        setTimeOfDay(to, 23, 59, 59, 999);
         int titleId = -1;
 
         switch (filter)
@@ -283,10 +287,7 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
 
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.DAY_OF_YEAR, -day);
-            cal.set(Calendar.HOUR_OF_DAY, 8);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
+            setTimeOfDay(cal, 8, 0, 0, 0);
 
             Calendar breakCal = Calendar.getInstance();/**/
             breakCal.setTimeInMillis(cal.getTimeInMillis());
