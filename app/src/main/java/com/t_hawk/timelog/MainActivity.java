@@ -29,7 +29,6 @@ import com.t_hawk.timelog.model.Registration;
 import com.t_hawk.timelog.model.Task;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -40,7 +39,8 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements TaskListFragment.OnListFragmentInteractionListener {
 
-    private ArrayAdapter<Task> _adapter;
+    private static final int FirstDayOfWeek = Calendar.SUNDAY;
+    private static final int LastDayOfWeek = Calendar.SATURDAY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +64,17 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
         }
 
         BuildDummyData();
+
+        Calendar today = Calendar.getInstance();
+        int day = today.get(Calendar.DAY_OF_WEEK);
+
+        TaskFilter filter = (FirstDayOfWeek == day && !HasRegistrations(today)) ? TaskFilter.lastWeek : TaskFilter.thisWeek;
+        LoadFilterFragment(filter);
+    }
+
+    private boolean HasRegistrations(Calendar today) {
+        // TODO: Check in Sugar
+        return false;
     }
 
     private ArrayList<Task> getTasks(Calendar from, Calendar to) {
@@ -132,63 +143,66 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
             .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                 @Override
                 public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                    // do something with the clicked item :D
                     TaskFilter filter = filterMap.get(drawerItem.getIdentifier());
                     if (null == filter) filter = TaskFilter.none;
 
-                    FragmentManager manager = getFragmentManager();
-                    FragmentTransaction transaction = manager.beginTransaction();
-
-                    // TODO: First-day-of-week should be a configuration setting
-                    int firstDayOfWeek = Calendar.SUNDAY;
-                    // TODO: Last-day-of-week should be a configuration setting
-                    int lastDayOfWeek = Calendar.SATURDAY;
-
-                    Calendar from = Calendar.getInstance();
-                    Calendar to = Calendar.getInstance();
-
-                    switch (filter)
-                    {
-                        case yesterday:
-                            from.add(Calendar.DATE, -1);
-                            to.add(Calendar.DATE, -1);
-                            break;
-                        case today:
-                            break;
-                        case lastWeek:
-                            from.add(Calendar.WEEK_OF_YEAR, -1);
-                            to.add(Calendar.WEEK_OF_YEAR, -1);
-                        case thisWeek:
-                            from.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
-                            to.set(Calendar.DAY_OF_WEEK, lastDayOfWeek);
-                            break;
-                        case lastMonth:
-                            from.add(Calendar.MONTH, -1);
-                            to.add(Calendar.MONTH, -1);
-                        case thisMonth:
-                            from.set(Calendar.DATE, from.getActualMinimum(Calendar.DATE));
-                            to.set(Calendar.DATE, to.getActualMaximum(Calendar.DATE));
-                            break;
-                        case year:
-                            from.set(Calendar.DAY_OF_YEAR, from.getActualMinimum(Calendar.DAY_OF_YEAR));
-                            to.set(Calendar.DAY_OF_YEAR, to.getActualMaximum(Calendar.DAY_OF_YEAR));
-                            break;
-                        case period:
-                            // TODO: Implement this using a dialog
-                            break;
-                        default:
-                            // TODO: Handle not a period filter
-                            break;
-                    }
-
-                    TaskListFragment taskListFragment = TaskListFragment.newInstance(getTasks(from, to));
-                    transaction.add(R.id.main_fragment_container, taskListFragment);
-                    transaction.commit();
+                    LoadFilterFragment(filter);
 
                     return false;
                 }
             })
             .build();
+    }
+
+    private void LoadFilterFragment(TaskFilter filter) {
+        FragmentManager manager = getFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+
+        // TODO: First-day-of-week should be a configuration setting
+        int firstDayOfWeek = FirstDayOfWeek;
+        // TODO: Last-day-of-week should be a configuration setting
+        int lastDayOfWeek = LastDayOfWeek;
+
+        Calendar from = Calendar.getInstance();
+        Calendar to = Calendar.getInstance();
+
+        switch (filter)
+        {
+            case yesterday:
+                from.add(Calendar.DATE, -1);
+                to.add(Calendar.DATE, -1);
+                break;
+            case today:
+                break;
+            case lastWeek:
+                from.add(Calendar.WEEK_OF_YEAR, -1);
+                to.add(Calendar.WEEK_OF_YEAR, -1);
+            case thisWeek:
+                from.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
+                to.set(Calendar.DAY_OF_WEEK, lastDayOfWeek);
+                break;
+            case lastMonth:
+                from.add(Calendar.MONTH, -1);
+                to.add(Calendar.MONTH, -1);
+            case thisMonth:
+                from.set(Calendar.DATE, from.getActualMinimum(Calendar.DATE));
+                to.set(Calendar.DATE, to.getActualMaximum(Calendar.DATE));
+                break;
+            case year:
+                from.set(Calendar.DAY_OF_YEAR, from.getActualMinimum(Calendar.DAY_OF_YEAR));
+                to.set(Calendar.DAY_OF_YEAR, to.getActualMaximum(Calendar.DAY_OF_YEAR));
+                break;
+            case period:
+                // TODO: Implement this using a dialog
+                break;
+            default:
+                // TODO: Handle not a period filter
+                break;
+        }
+
+        TaskListFragment taskListFragment = TaskListFragment.newInstance(getTasks(from, to));
+        transaction.add(R.id.main_fragment_container, taskListFragment);
+        transaction.commit();
     }
 
     @Override
