@@ -38,7 +38,10 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements TaskListFragment.OnListFragmentInteractionListener {
 
+    // TODO: First-day-of-week should be a configuration setting
     private static final int FirstDayOfWeek = Calendar.SUNDAY;
+
+    // TODO: Last-day-of-week should be a configuration setting
     private static final int LastDayOfWeek = Calendar.SATURDAY;
 
     @Override
@@ -179,11 +182,6 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
         FragmentManager manager = getFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
 
-        // TODO: First-day-of-week should be a configuration setting
-        int firstDayOfWeek = FirstDayOfWeek;
-        // TODO: Last-day-of-week should be a configuration setting
-        int lastDayOfWeek = LastDayOfWeek;
-
         Calendar from = Calendar.getInstance();
         setTimeOfDay(from, 0, 0, 0, 0);
 
@@ -206,8 +204,8 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
                 to.add(Calendar.WEEK_OF_YEAR, -1);
                 titleId = R.string.drawer_item_lastWeek;
             case thisWeek:
-                from.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
-                to.set(Calendar.DAY_OF_WEEK, lastDayOfWeek);
+                from.set(Calendar.DAY_OF_WEEK, FirstDayOfWeek);
+                to.set(Calendar.DAY_OF_WEEK, LastDayOfWeek);
                 if (-1 == titleId) titleId = R.string.drawer_item_thisWeek;
                 break;
             case lastMonth:
