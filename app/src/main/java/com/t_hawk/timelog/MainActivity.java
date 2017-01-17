@@ -237,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
         setTitle(titleId);
 
         TaskListFragment taskListFragment = TaskListFragment.newInstance(getTasks(from, to));
-        transaction.add(R.id.main_fragment_container, taskListFragment);
+        transaction.replace(R.id.main_fragment_container, taskListFragment);
         transaction.commit();
     }
 
