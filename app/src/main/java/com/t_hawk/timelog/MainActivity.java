@@ -1,16 +1,19 @@
 package com.t_hawk.timelog;
 
+import android.app.DatePickerDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.LongSparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.DatePicker;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
@@ -22,6 +25,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.orm.SugarDb;
 import com.orm.query.Condition;
 import com.orm.query.Select;
+import com.t_hawk.timelog.fragments.DatePickerFragment;
 import com.t_hawk.timelog.fragments.TaskListFragment;
 import com.t_hawk.timelog.model.Break;
 import com.t_hawk.timelog.model.Registration;
@@ -36,7 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements TaskListFragment.OnListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements TaskListFragment.OnListFragmentInteractionListener, DatePickerDialog.OnDateSetListener {
 
     // TODO: First-day-of-week should be a configuration setting
     private static final int FirstDayOfWeek = Calendar.SUNDAY;
@@ -224,6 +228,8 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
                 break;
             case period:
                 // TODO: Implement this using a dialog
+                DatePickerFragment datePicker = new DatePickerFragment();
+                datePicker.listener(this).show(getSupportFragmentManager(), "datePicker");
                 titleId = R.string.drawer_item_period;
                 break;
             default:
@@ -342,5 +348,11 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, month, day);
     }
 }
