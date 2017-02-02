@@ -221,9 +221,10 @@ public class MainActivity extends AppCompatActivity
                 titleId = R.string.drawer_item_year;
                 break;
             case period:
-                // TODO: Implement this using a dialog
+                from.set(Calendar.DAY_OF_WEEK, FirstDayOfWeek);
+                to.set(Calendar.DAY_OF_WEEK, LastDayOfWeek);
 
-                com.borax12.materialdaterangepicker.date.DatePickerDialog dpd = com.borax12.materialdaterangepicker.date.DatePickerDialog.newInstance(this, from.get(Calendar.YEAR), from.get(Calendar.MONTH), from.get(Calendar.DAY_OF_MONTH));
+                com.borax12.materialdaterangepicker.date.DatePickerDialog dpd = com.borax12.materialdaterangepicker.date.DatePickerDialog.newInstance(this, from.get(Calendar.YEAR), from.get(Calendar.MONTH), from.get(Calendar.DAY_OF_MONTH), to.get(Calendar.YEAR), to.get(Calendar.MONTH), to.get(Calendar.DAY_OF_MONTH));
                 dpd.show(getFragmentManager(), "DatePickerDialog");
 
                 titleId = R.string.drawer_item_period;
@@ -341,8 +342,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDateSet(com.borax12.materialdaterangepicker.date.DatePickerDialog datePicker, int year, int month, int day, int yearEnd, int monthOfYearEnd, int dayOfMonthEnd) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(year, month, day);
+    public void onDateSet(com.borax12.materialdaterangepicker.date.DatePickerDialog datePicker, int year, int month, int day, int yearEnd, int monthEnd, int dayEnd) {
+        Calendar periodFrom = Calendar.getInstance();
+        periodFrom.set(year, month, day);
+
+        Calendar periodTo = Calendar.getInstance();
+        periodTo.set(yearEnd, monthEnd, dayEnd);
     }
 }
