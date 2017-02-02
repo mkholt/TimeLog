@@ -1,19 +1,16 @@
 package com.t_hawk.timelog;
 
-import android.app.DatePickerDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.LongSparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.DatePicker;
 
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
@@ -25,7 +22,6 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.orm.SugarDb;
 import com.orm.query.Condition;
 import com.orm.query.Select;
-import com.t_hawk.timelog.fragments.DatePickerFragment;
 import com.t_hawk.timelog.fragments.TaskListFragment;
 import com.t_hawk.timelog.model.Break;
 import com.t_hawk.timelog.model.Registration;
@@ -40,8 +36,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements TaskListFragment.OnListFragmentInteractionListener, DatePickerDialog.OnDateSetListener {
-
+public class MainActivity extends AppCompatActivity
+        implements TaskListFragment.OnListFragmentInteractionListener,
+        com.borax12.materialdaterangepicker.date.DatePickerDialog.OnDateSetListener
+{
     // TODO: First-day-of-week should be a configuration setting
     private static final int FirstDayOfWeek = Calendar.SUNDAY;
 
@@ -113,17 +111,14 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
 
         HashSet<Long> seen = new HashSet<>();
         ArrayList<Task> tasks = new ArrayList<>();
-        for (Registration r : registrations)
-        {
+        for (Registration r : registrations) {
             Task t = r.getTask();
             if (t == null) continue;
-            while (t.getParentTask() != null)
-            {
+            while (t.getParentTask() != null) {
                 t = t.getParentTask();
             }
 
-            if (!seen.contains(t.getId()))
-            {
+            if (!seen.contains(t.getId())) {
                 seen.add(t.getId());
                 tasks.add(t);
             }
@@ -157,29 +152,29 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
         drawerItems.add(new SecondaryDrawerItem().withIdentifier(id).withName(R.string.drawer_item_period).withIcon(GoogleMaterial.Icon.gmd_date_range));
 
         new DrawerBuilder()
-            .withActivity(this)
-            .withToolbar(toolbar)
-            .addDrawerItems(
-                    taskItem
-                    , new DividerDrawerItem()
-            )
-            .addDrawerItems(drawerItems.toArray(new IDrawerItem[0]))
-            .addDrawerItems(
-                new DividerDrawerItem()
-                , new SecondaryDrawerItem().withIdentifier(++id).withName(R.string.drawer_item_settings).withIcon(GoogleMaterial.Icon.gmd_settings)
-            )
-            .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                @Override
-                public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                    TaskFilter filter = filterMap.get(drawerItem.getIdentifier());
-                    if (null == filter) filter = TaskFilter.none;
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .addDrawerItems(
+                        taskItem
+                        , new DividerDrawerItem()
+                )
+                .addDrawerItems(drawerItems.toArray(new IDrawerItem[0]))
+                .addDrawerItems(
+                        new DividerDrawerItem()
+                        , new SecondaryDrawerItem().withIdentifier(++id).withName(R.string.drawer_item_settings).withIcon(GoogleMaterial.Icon.gmd_settings)
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        TaskFilter filter = filterMap.get(drawerItem.getIdentifier());
+                        if (null == filter) filter = TaskFilter.none;
 
-                    LoadFilterFragment(filter);
+                        LoadFilterFragment(filter);
 
-                    return false;
-                }
-            })
-            .build();
+                        return false;
+                    }
+                })
+                .build();
     }
 
     private void LoadFilterFragment(TaskFilter filter) {
@@ -193,8 +188,7 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
         setTimeOfDay(to, 23, 59, 59, 999);
         int titleId = -1;
 
-        switch (filter)
-        {
+        switch (filter) {
             case yesterday:
                 from.add(Calendar.DATE, -1);
                 to.add(Calendar.DATE, -1);
@@ -228,8 +222,10 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
                 break;
             case period:
                 // TODO: Implement this using a dialog
-                DatePickerFragment datePicker = new DatePickerFragment();
-                datePicker.listener(this).show(getSupportFragmentManager(), "datePicker");
+
+                com.borax12.materialdaterangepicker.date.DatePickerDialog dpd = com.borax12.materialdaterangepicker.date.DatePickerDialog.newInstance(this, from.get(Calendar.YEAR), from.get(Calendar.MONTH), from.get(Calendar.DAY_OF_MONTH));
+                dpd.show(getFragmentManager(), "DatePickerDialog");
+
                 titleId = R.string.drawer_item_period;
                 break;
             default:
@@ -261,22 +257,19 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
         Random rand = new Random();
 
         LongSparseArray<Task> taskMap = new LongSparseArray<>();
-        for (int i = 0; i < 10; i++)
-        {
-            Task task = new Task("Task " + (i+1));
+        for (int i = 0; i < 10; i++) {
+            Task task = new Task("Task " + (i + 1));
             task.save();
             taskMap.put(task.getId(), task);
 
             int sub = rand.nextInt(5);
-            for (int j = 0; j < sub; j++)
-            {
-                Task subTask = new Task(task.getName() + "." + (j+1));
+            for (int j = 0; j < sub; j++) {
+                Task subTask = new Task(task.getName() + "." + (j + 1));
                 subTask.setParentTask(task);
                 subTask.save();
                 taskMap.put(subTask.getId(), subTask);
 
-                if (rand.nextBoolean())
-                {
+                if (rand.nextBoolean()) {
                     Task subSubTask = new Task(subTask.getName() + ".1");
                     subSubTask.setParentTask(subTask);
                     subSubTask.save();
@@ -285,8 +278,7 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
             }
         }
 
-        for (int day = 30; day > -1; day--)
-        {
+        for (int day = 30; day > -1; day--) {
             int seconds = 8 * 60 * 60;
 
             Calendar cal = Calendar.getInstance();
@@ -302,9 +294,8 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
 
             Date startTime = new Date(cal.getTimeInMillis());
             Registration breakReg = null;
-            int min = 60*15;
-            while (seconds > 0)
-            {
+            int min = 60 * 15;
+            while (seconds > 0) {
                 int regTime = seconds > min ? rand.nextInt(seconds - min + 1) + min : seconds;
                 seconds -= regTime;
                 cal.add(Calendar.SECOND, regTime);
@@ -315,8 +306,7 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
 
                 startTime = new Date(cal.getTimeInMillis());
 
-                if (reg.getStartTime().before(startBreak) && reg.getEndTime().after(endBreak))
-                {
+                if (reg.getStartTime().before(startBreak) && reg.getEndTime().after(endBreak)) {
                     breakReg = reg;
                 }
             }
@@ -351,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements TaskListFragment.
     }
 
     @Override
-    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+    public void onDateSet(com.borax12.materialdaterangepicker.date.DatePickerDialog datePicker, int year, int month, int day, int yearEnd, int monthOfYearEnd, int dayOfMonthEnd) {
         Calendar cal = Calendar.getInstance();
         cal.set(year, month, day);
     }
