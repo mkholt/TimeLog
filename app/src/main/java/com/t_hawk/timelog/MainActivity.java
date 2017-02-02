@@ -178,9 +178,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void LoadFilterFragment(TaskFilter filter) {
-        FragmentManager manager = getFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-
         Calendar from = Calendar.getInstance();
         setTimeOfDay(from, 0, 0, 0, 0);
 
@@ -227,17 +224,24 @@ public class MainActivity extends AppCompatActivity
                 com.borax12.materialdaterangepicker.date.DatePickerDialog dpd = com.borax12.materialdaterangepicker.date.DatePickerDialog.newInstance(this, from.get(Calendar.YEAR), from.get(Calendar.MONTH), from.get(Calendar.DAY_OF_MONTH), to.get(Calendar.YEAR), to.get(Calendar.MONTH), to.get(Calendar.DAY_OF_MONTH));
                 dpd.show(getFragmentManager(), "DatePickerDialog");
 
-                titleId = R.string.drawer_item_period;
-                break;
+                // We do not wish to update the list immediately
+                return;
             default:
                 // TODO: Handle not a period filter
                 titleId = R.string.app_name;
                 break;
         }
 
+        LoadTaskListFragment(titleId, from, to);
+    }
+
+    private void LoadTaskListFragment(int titleId, Calendar from, Calendar to) {
         setTitle(titleId);
 
         TaskListFragment taskListFragment = TaskListFragment.newInstance(getTasks(from, to));
+
+        FragmentManager manager = getFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.main_fragment_container, taskListFragment);
         transaction.commit();
     }
@@ -348,5 +352,7 @@ public class MainActivity extends AppCompatActivity
 
         Calendar periodTo = Calendar.getInstance();
         periodTo.set(yearEnd, monthEnd, dayEnd);
+
+        LoadTaskListFragment(R.string.drawer_item_period, periodFrom, periodTo);
     }
 }
